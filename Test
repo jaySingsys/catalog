@@ -9,8 +9,10 @@ import UIKit
 
 class LoginViewController: UIViewController {
     
-    var iconClicked = false
-
+    var iconClick = false
+    var selectedIndex = 0
+    var password = ""
+    
     @IBOutlet weak var loginView: UIView!
     @IBOutlet weak var tableView: UITableView!
     override func viewDidLoad() {
@@ -34,28 +36,40 @@ class LoginViewController: UIViewController {
         tableView.register(UINib(nibName: "nextBtnTVC", bundle: nil), forCellReuseIdentifier: "nextBtnTVC")
         tableView.register(UINib(nibName: "requestAccountTVC", bundle: nil), forCellReuseIdentifier: "requestAccountTVC")
     }
-
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    
+     // MARK: - Navigation
+    //Navigate to forgot password screen
+    @IBAction func btnForgotPass(sender: UIButton?){
+        let vc = ForgotPasswordVC()
+        self.navigationController?.pushViewController(vc, animated: true)
+        
     }
-    */
-
+    
+    
+    @IBAction func showPassText(sender:Any){
+        let passField = tableView.dequeueReusableCell(withIdentifier: "hidePasswordTextFieldTVC") as! passwordTextFieldTVC
+        let indexPath = IndexPath(item: selectedIndex, section: 0)
+        if iconClick == true{
+        let indexPath = IndexPath(item: selectedIndex, section: 0)
+        tableView.reloadRows(at: [indexPath], with: .none)
+        iconClick = false
+        }else{
+        passField.inputTextField?.text = password
+        tableView.reloadRows(at: [indexPath], with: .none)
+        iconClick = true
+        }
+    }
 }
 
 extension LoginViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0 {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "titleLblTVC", for: indexPath) as! titleLblTVC
-        cell.titleLbl.text = "Login"
-        cell.mainView.backgroundColor = UIColor.clear
-        cell.selectionStyle = .none
-        return cell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "titleLblTVC", for: indexPath) as! titleLblTVC
+            cell.titleLbl.text = "Login"
+            cell.mainView.backgroundColor = UIColor.clear
+            cell.selectionStyle = .none
+            return cell
         } else if indexPath.row == 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "descriptionLblTVC", for: indexPath) as! descriptionLblTVC
             cell.mainView.backgroundColor = UIColor.clear
@@ -75,6 +89,7 @@ extension LoginViewController: UITableViewDelegate, UITableViewDataSource {
             return cell
         }  else if indexPath.row == 3 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "hidePasswordTextFieldTVC", for: indexPath) as! passwordTextFieldTVC
+            selectedIndex = indexPath.row
             cell.inputTextField?.text = ""
             cell.sufflePassBtn.setTitle("", for: .normal)
             cell.inputTextField?.layer.borderWidth = 0
@@ -86,8 +101,24 @@ extension LoginViewController: UITableViewDelegate, UITableViewDataSource {
             cell.txtFieldWidthConst.constant = 309
             cell.txtFieldHeightConst.constant = 38
             cell.inputTextField?.attributedPlaceholder = NSAttributedString(string: "Password",attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
-            showPassText()
-            return cell
+            
+            //Show hide password text
+            if iconClick == true{
+                cell.inputTextField?.isSecureTextEntry = false
+                cell.sufflePassBtn.setImage(UIImage(systemName: "star"), for: .normal)
+                cell.sufflePassBtn.addTarget(self, action: #selector(showPassText(sender:)), for: .allTouchEvents)
+                cell.inputTextField?.text = password
+                password = (cell.inputTextField?.text)!
+                return cell
+            }else{
+                cell.inputTextField?.isSecureTextEntry = true
+                cell.sufflePassBtn.setImage(UIImage(named: "eye-icon"), for: .normal)
+                cell.sufflePassBtn.addTarget(self, action: #selector(showPassText(sender:)), for: .allTouchEvents)
+                password = (cell.inputTextField?.text)!
+                print("Icon clicked")
+                return cell
+            }
+            
         } else if indexPath.row == 4 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "rememberMeTVC", for: indexPath) as! rememberMeTVC
             cell.imgCheckBox.image = UIImage(named: "checked-box")
@@ -113,22 +144,5 @@ extension LoginViewController: UITableViewDelegate, UITableViewDataSource {
         return 6
     }
     
-    
-//Navigate to forgot password screen
-    @IBAction func btnForgotPass(sender: UIButton?){
-        let vc = ForgotPasswordVC()
-        self.navigationController?.pushViewController(vc, animated: true)
-
-    }
-    
-//Show password text
-    func showPassText() -> Bool{
-       let passData = passwordTextFieldTVC()
-        if iconClicked == true {
-            return passData.inputTextField?.isSecureTextEntry == false
-        }else{
-            return passData.inputTextField?.isSecureTextEntry == true
-    }
-    }
 }
-    
+
