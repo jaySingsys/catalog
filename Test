@@ -1,0 +1,134 @@
+//
+//  LoginViewController.swift
+//  DorderSupplier
+//
+//  Created by Singsys on 06/07/22.
+//
+
+import UIKit
+
+class LoginViewController: UIViewController {
+    
+    var iconClicked = false
+
+    @IBOutlet weak var loginView: UIView!
+    @IBOutlet weak var tableView: UITableView!
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        tableView.delegate = self
+        tableView.dataSource = self
+        loginView.layer.cornerRadius = 35
+        self.navigationItem.setHidesBackButton(true, animated: true);
+        loginView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        tableView.separatorStyle = .none
+        registerCell()
+    }
+    
+    // MARK: - Forgot Password Ragister Cell
+    func registerCell(){
+        tableView.register(UINib(nibName: "titleLblTVC", bundle: nil), forCellReuseIdentifier: "titleLblTVC")
+        tableView.register(UINib(nibName: "descriptionLblTVC", bundle: nil), forCellReuseIdentifier: "descriptionLblTVC")
+        tableView.register(UINib(nibName: "forgotTextFieldTVC", bundle: nil), forCellReuseIdentifier: "forgotTextFieldTVC")
+        tableView.register(UINib(nibName: "hidePasswordTextFieldTVC", bundle: nil), forCellReuseIdentifier: "hidePasswordTextFieldTVC")
+        tableView.register(UINib(nibName: "rememberMeTVC", bundle: nil), forCellReuseIdentifier: "rememberMeTVC")
+        tableView.register(UINib(nibName: "nextBtnTVC", bundle: nil), forCellReuseIdentifier: "nextBtnTVC")
+        tableView.register(UINib(nibName: "requestAccountTVC", bundle: nil), forCellReuseIdentifier: "requestAccountTVC")
+    }
+
+
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
+}
+
+extension LoginViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.row == 0 {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "titleLblTVC", for: indexPath) as! titleLblTVC
+        cell.titleLbl.text = "Login"
+        cell.mainView.backgroundColor = UIColor.clear
+        cell.selectionStyle = .none
+        return cell
+        } else if indexPath.row == 1 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "descriptionLblTVC", for: indexPath) as! descriptionLblTVC
+            cell.mainView.backgroundColor = UIColor.clear
+            cell.descriptionLbl.font = UIFont(name:"Helvetica", size: 14.0)
+            cell.descriptionLbl.text = "Enter your credentials below to login to your account."
+            return cell
+        }  else if indexPath.row == 2 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "forgotTextFieldTVC", for: indexPath) as! forgotTextFieldTVC
+            cell.lblTopConst.constant = 20
+            cell.lblBottomConst.constant = 5
+            cell.lblTralingConst.constant = 10
+            cell.lblWidthConst.constant = 309
+            cell.lblHeightConst.constant = 38
+            cell.inputTextField.layer.borderWidth = 0
+            cell.inputTextField.attributedPlaceholder = NSAttributedString(string: "Email/Mobile Number",attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
+            cell.inputTextField.text = ""
+            return cell
+        }  else if indexPath.row == 3 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "hidePasswordTextFieldTVC", for: indexPath) as! passwordTextFieldTVC
+            cell.inputTextField?.text = ""
+            cell.sufflePassBtn.setTitle("", for: .normal)
+            cell.inputTextField?.layer.borderWidth = 0
+            cell.lblLeadingConst.constant = 20
+            cell.lblTralingConst.constant = 10
+            cell.lblEyeTralingConst.constant = 16
+            cell.lblTopConst.constant = 20
+            cell.lblBottomConst.constant = 20
+            cell.txtFieldWidthConst.constant = 309
+            cell.txtFieldHeightConst.constant = 38
+            cell.inputTextField?.attributedPlaceholder = NSAttributedString(string: "Password",attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
+            showPassText()
+            return cell
+        } else if indexPath.row == 4 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "rememberMeTVC", for: indexPath) as! rememberMeTVC
+            cell.imgCheckBox.image = UIImage(named: "checked-box")
+            cell.lblRemberMe.text = "Keep me logged In"
+            cell.checkboxLeadingConst.constant = 20
+            cell.lblForgotTralingConst.constant = 10
+            return cell
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "nextBtnTVC", for: indexPath) as! nextBtnTVC
+            cell.mainView.backgroundColor = UIColor(named: "white")
+            cell.btnTopConst.constant = 50
+            cell.btnBottomConst.constant = 40
+            cell.nextBtn.layer.cornerRadius = 18
+            cell.btnLeadingConst.constant = 20
+            cell.btnTrailingConst.constant = 10
+            cell.nextBtn.titleLabel?.font =  UIFont(name: "Helvetica-Bold", size: 14)
+            cell.nextBtn.setTitle("LOGIN", for: .normal)
+            return cell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 6
+    }
+    
+    
+//Navigate to forgot password screen
+    @IBAction func btnForgotPass(sender: UIButton?){
+        let vc = ForgotPasswordVC()
+        self.navigationController?.pushViewController(vc, animated: true)
+
+    }
+    
+//Show password text
+    func showPassText() -> Bool{
+       let passData = passwordTextFieldTVC()
+        if iconClicked == true {
+            return passData.inputTextField?.isSecureTextEntry == false
+        }else{
+            return passData.inputTextField?.isSecureTextEntry == true
+    }
+    }
+}
+    
